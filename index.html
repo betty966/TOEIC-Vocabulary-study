@@ -3,273 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>多益學習 - 第三階段 (字卡測驗版)</title>
+    <title>多益學習 - 簡易版</title>
     <style>
         :root {
-            --bg-color: #FDFBF7;        /* 極淺奶茶底色 */
-            --text-color: #4A3B32;      /* 深咖啡文字 */
-            --card-bg: #FFFFFF;         /* 卡片純白底色 */
-            --btn-color: #C1A68D;       /* 奶茶按鈕色 */
-            --btn-hover: #A68A6D;       /* 按鈕 hover 色 */
-            --level-light: #E8D8C8;     /* 淺色：有一點點知道 */
-            --level-dark: #8C6D53;      /* 深色：完全不知道 */
-            --dark-text: #FFFFFF;       /* 深色卡片上的白字 */
+            --bg-color: #FDFBF7; --text-color: #4A3B32; --card-bg: #FFFFFF;
+            --btn-color: #C1A68D; --btn-hover: #A68A6D; --level-light: #E8D8C8;
+            --level-dark: #8C6D53; --dark-text: #FFFFFF;
         }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); max-width: 800px; margin: 0 auto; padding: 20px; }
         h1, h2 { text-align: center; color: var(--text-color); }
-
-        /* 模式切換按鈕 */
-        .mode-switch {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .mode-btn {
-            background-color: transparent;
-            color: var(--text-color);
-            border: 2px solid var(--btn-color);
-            width: auto;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-        }
-
-        .mode-btn.active {
-            background-color: var(--btn-color);
-            color: white;
-        }
-
-        /* 視圖區域隱藏控制 */
+        .mode-switch { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .mode-btn { background-color: transparent; color: var(--text-color); border: 2px solid var(--btn-color); padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        .mode-btn.active { background-color: var(--btn-color); color: white; }
         #list-view, #flashcard-view { display: none; }
         #list-view.active, #flashcard-view.active { display: block; }
-
-        /* 表單設計 */
-        .form-container {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-            border: 2px solid var(--btn-color);
-        }
-
+        .form-container { background-color: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 30px; border: 2px solid var(--btn-color); }
         .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
         .form-group { flex: 1; margin-bottom: 15px; }
         .form-row .form-group { margin-bottom: 0; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        input[type="text"], textarea, select {
-            width: 100%; padding: 10px; border: 1px solid #CCC; border-radius: 6px; box-sizing: border-box; font-family: inherit;
-        }
-
-        button {
-            background-color: var(--btn-color); color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: background-color 0.2s;
-        }
+        input[type="text"], textarea, select { width: 100%; padding: 10px; border: 1px solid #CCC; border-radius: 6px; box-sizing: border-box; }
+        button { background-color: var(--btn-color); color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; }
         button:hover { background-color: var(--btn-hover); }
-
-        /* 單字卡片列表設計 */
         #word-list { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        .word-card { padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; }
-        
+        .word-card { padding: 20px; border-radius: 12px; position: relative; }
         .status-light { background-color: var(--level-light); color: var(--text-color); }
         .status-dark { background-color: var(--level-dark); color: var(--dark-text); }
-
         .card-header { display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 10px; margin-bottom: 15px; }
         .status-dark .card-header { border-bottom: 1px solid rgba(255,255,255,0.3); }
-        
         .word-title { font-size: 26px; font-weight: bold; margin: 0; margin-right: 10px; }
         .word-translation { font-size: 18px; margin-right: 15px; font-weight: normal; }
         .pos-badge { background-color: rgba(0,0,0,0.1); padding: 3px 8px; border-radius: 4px; font-size: 14px; margin-right: 15px; }
-        .status-dark .pos-badge { background-color: rgba(255,255,255,0.2); }
-
         .speaker-btn { background: none; border: none; font-size: 24px; cursor: pointer; width: auto; padding: 0; margin-right: auto; }
-        .speaker-btn:hover { background: none; transform: scale(1.1); }
         .edit-btn { background-color: rgba(255,255,255,0.3); width: auto; padding: 5px 15px; font-size: 14px; color: inherit; }
         .status-dark .edit-btn { background-color: rgba(255,255,255,0.2); color: white; }
-
         .word-content { margin-bottom: 10px; line-height: 1.6; }
         .grid-info { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background-color: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin-bottom: 10px; }
         .status-dark .grid-info { background-color: rgba(0,0,0,0.1); }
-
-        /* ================= 翻轉字卡測驗區 ================= */
-        .flashcard-container {
-            perspective: 1000px; /* 3D 視角 */
-            max-width: 500px;
-            margin: 0 auto 30px auto;
-            height: 350px;
-        }
-
-        .flashcard {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
-            transform-style: preserve-3d;
-            cursor: pointer;
-        }
-
-        .flashcard.is-flipped {
-            transform: rotateY(180deg);
-        }
-
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden; /* 隱藏背面 */
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-            box-sizing: border-box;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        /* 字卡正面 (英文) */
-        .card-front {
-            background-color: var(--card-bg);
-            border: 4px solid var(--btn-color);
-            color: var(--text-color);
-        }
-
+        
+        /* 翻轉字卡 */
+        .flashcard-container { perspective: 1000px; max-width: 500px; margin: 0 auto 30px auto; height: 350px; }
+        .flashcard { width: 100%; height: 100%; position: relative; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; cursor: pointer; }
+        .flashcard.is-flipped { transform: rotateY(180deg); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; box-sizing: border-box; text-align: center; }
+        .card-front { background-color: var(--card-bg); border: 4px solid var(--btn-color); color: var(--text-color); }
         .card-front h2 { font-size: 42px; margin: 0 0 15px 0; }
         .card-front .hint { font-size: 14px; color: #888; position: absolute; bottom: 20px; }
-        
-        /* 字卡背面 (中文與細節) */
-        .card-back {
-            background-color: var(--btn-color);
-            color: white;
-            transform: rotateY(180deg);
-            border: 4px solid var(--btn-hover);
-        }
-        
+        .card-back { background-color: var(--btn-color); color: white; transform: rotateY(180deg); border: 4px solid var(--btn-hover); }
         .card-back h2 { font-size: 32px; margin: 0 0 10px 0; color: white; }
-        .card-back p { font-size: 16px; margin: 5px 0; line-height: 1.5; }
+        .card-back p { font-size: 16px; margin: 5px 0; }
         .card-back .example { background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 15px; text-align: left; width: 100%; }
-
-        /* 字卡控制按鈕 */
-        .fc-controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .fc-btn {
-            background-color: white;
-            color: var(--text-color);
-            border: 2px solid var(--btn-color);
-        }
-        .fc-btn:hover { background-color: var(--bg-color); }
+        .fc-controls { display: flex; justify-content: center; gap: 15px; max-width: 500px; margin: 0 auto; }
+        .fc-btn { background-color: white; color: var(--text-color); border: 2px solid var(--btn-color); }
         .fc-progress { text-align: center; margin-bottom: 10px; font-weight: bold; color: #888;}
-
+        
+        /* 同步專用樣式 */
+        .sync-section { background: #EEE5DB; padding: 15px; border-radius: 12px; margin-top: 40px; text-align: center; border: 1px dashed var(--text-color); }
+        .sync-btns { display: flex; gap: 10px; margin-top: 10px; }
+        .sync-btns button { background-color: #A68A6D; font-size: 14px; padding: 8px; }
     </style>
 </head>
 <body>
 
-    <h1>☕ 多益第三階段</h1>
+    <h1>☕ 多益第三階段特訓</h1>
 
-    <!-- 模式切換按鈕 -->
     <div class="mode-switch">
         <button class="mode-btn active" id="btn-list" onclick="switchMode('list')">📝 列表管理</button>
         <button class="mode-btn" id="btn-fc" onclick="switchMode('flashcard')">🃏 翻翻樂小考</button>
     </div>
 
-    <!-- 視圖一：列表與新增模式 -->
     <div id="list-view" class="active">
         <div class="form-container">
             <h2 id="form-title">新增單字</h2>
             <input type="hidden" id="edit-id" value="">
-            
             <div class="form-row">
-                <div class="form-group" style="flex: 2;">
-                    <label for="word">單字 / 詞彙 *</label>
-                    <input type="text" id="word" placeholder="例如: implement" required>
-                </div>
-                <div class="form-group" style="flex: 2;">
-                    <label for="translation">中文意思 *</label>
-                    <input type="text" id="translation" placeholder="例如: 實施、執行" required>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label for="pos">詞性</label>
-                    <input type="text" id="pos" placeholder="例如: v.">
-                </div>
+                <div class="form-group" style="flex: 2;"><label>單字 *</label><input type="text" id="word" required></div>
+                <div class="form-group" style="flex: 2;"><label>中文意思 *</label><input type="text" id="translation" required></div>
+                <div class="form-group" style="flex: 1;"><label>詞性</label><input type="text" id="pos"></div>
             </div>
-            
             <div class="form-row">
-                <div class="form-group">
-                    <label for="collocation">常見搭配詞</label>
-                    <input type="text" id="collocation" placeholder="例如: implement a policy">
-                </div>
-                <div class="form-group">
-                    <label for="synAnt">同義詞 / 反義詞</label>
-                    <input type="text" id="synAnt" placeholder="例如: (同) execute">
-                </div>
+                <div class="form-group"><label>常見搭配詞</label><input type="text" id="collocation"></div>
+                <div class="form-group"><label>同義/反義</label><input type="text" id="synAnt"></div>
             </div>
-
+            <div class="form-group"><label>例句 *</label><textarea id="example" rows="2" required></textarea></div>
+            <div class="form-group"><label>出題重點 *</label><textarea id="focus" rows="2" required></textarea></div>
             <div class="form-group">
-                <label for="example">例句 *</label>
-                <textarea id="example" rows="2" placeholder="例如: The company decided to implement the new policy." required></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="focus">出題重點 (Part 5, 6, 7 考法) *</label>
-                <textarea id="focus" rows="2" placeholder="例如: 常與 plan, policy 等詞搭配。" required></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="status">熟悉度</label>
+                <label>熟悉度</label>
                 <select id="status">
                     <option value="light">有一點點知道 (淺奶茶色)</option>
                     <option value="dark">完全不知道 (深咖啡色)</option>
                 </select>
             </div>
-            
             <button onclick="saveWord()" id="save-btn">儲存單字</button>
         </div>
-
-        <h2>📋 單字列表</h2>
         <div id="word-list"></div>
+
+        <div class="sync-section">
+            <strong>📱 平板/手機 跨裝置同步助手</strong>
+            <div class="sync-btns">
+                <button onclick="exportWords()">📤 點我「匯出」並複製單字</button>
+                <button onclick="importWords()">📥 點我「匯入」單字</button>
+            </div>
+        </div>
     </div>
 
-    <!-- 視圖二：翻轉字卡測驗模式 -->
     <div id="flashcard-view">
-        <div class="fc-progress" id="fc-progress">字卡進度: 1 / 1</div>
-        
+        <div class="fc-progress" id="fc-progress">字卡進度: 0 / 0</div>
         <div class="flashcard-container" onclick="flipCard()">
             <div class="flashcard" id="flashcard-element">
-                <!-- 正面：英文 -->
                 <div class="card-face card-front">
                     <h2 id="fc-word">Word</h2>
-                    <button class="speaker-btn" title="播放發音" onclick="speakWordFC(event)" style="margin: 0;">🔊 點擊發音</button>
+                    <button class="speaker-btn" onclick="speakWordFC(event)">🔊 點擊發音</button>
                     <div class="hint">點擊卡片翻面看中文 ↺</div>
                 </div>
-                <!-- 背面：中文與細節 -->
                 <div class="card-face card-back">
                     <h2 id="fc-trans">中文意思</h2>
                     <p id="fc-pos" style="font-weight: bold; color: #FFEBCD;"></p>
-                    <div class="example">
-                        <strong>📝 例句：</strong><br>
-                        <span id="fc-example"></span>
-                    </div>
+                    <div class="example"><strong>📝 例句：</strong><br><span id="fc-example"></span></div>
                 </div>
             </div>
         </div>
-
         <div class="fc-controls">
             <button class="fc-btn" onclick="prevCard()">⬅ 上一個</button>
             <button class="fc-btn" onclick="shuffleCards()">🔀 隨機打亂</button>
@@ -278,29 +131,43 @@
     </div>
 
     <script>
-        // 初始化預設資料 (已加入 translation 欄位)
-        let words = [
-            { 
-                id: 1, word: "accommodate", translation: "容納、提供住宿、迎合", pos: "v.",
-                collocation: "accommodate guests / needs", synAnt: "(同) lodge, house",
-                example: "The hotel can accommodate up to 500 guests.", 
-                focus: "常出現在 Part 7 飯店或場地租借信件中。", status: "dark" 
-            },
-            { 
-                id: 2, word: "subsequently", translation: "隨後、接著", pos: "adv.",
-                collocation: "subsequently discovered", synAnt: "(同) afterwards, later",
-                example: "He was fired, and subsequently, he sued the company.", 
-                focus: "Part 5 轉折語氣必考。", status: "light" 
-            }
-        ];
+        // 本地記憶體讀取
+        let words = JSON.parse(localStorage.getItem('toeic_data')) || [];
 
-        // === 模式切換邏輯 ===
+        function saveToStorage() {
+            localStorage.setItem('toeic_data', JSON.stringify(words));
+        }
+
+        // 跨裝置手動同步
+        function exportWords() {
+            if (words.length === 0) { alert("目前沒有單字可以匯出喔！"); return; }
+            const dataStr = btoa(encodeURIComponent(JSON.stringify(words)));
+            navigator.clipboard.writeText(dataStr).then(() => {
+                alert("👍 複製成功！請把進度傳到 LINE 給另一台裝置，然後在另一台裝置點擊「匯入」貼上即可。");
+            }).catch(() => {
+                alert("請手動複製這段代碼：\n\n" + dataStr);
+            });
+        }
+
+        function importWords() {
+            const dataStr = prompt("請貼上從另一台裝置複製過來的同步代碼：");
+            if (!dataStr) return;
+            try {
+                const parsedData = JSON.parse(decodeURIComponent(atob(dataStr)));
+                if (Array.isArray(parsedData)) {
+                    words = parsedData;
+                    saveToStorage();
+                    renderWords();
+                    alert("🎉 單字匯入成功！進度已同步。");
+                } else { alert("代碼格式不正確！"); }
+            } catch(e) { alert("匯入失敗，請確認代碼是否完整複製。"); }
+        }
+
         function switchMode(mode) {
             document.getElementById('btn-list').classList.remove('active');
             document.getElementById('btn-fc').classList.remove('active');
             document.getElementById('list-view').classList.remove('active');
             document.getElementById('flashcard-view').classList.remove('active');
-
             if (mode === 'list') {
                 document.getElementById('btn-list').classList.add('active');
                 document.getElementById('list-view').classList.add('active');
@@ -312,51 +179,35 @@
             }
         }
 
-        // === 語音功能 ===
         function speakText(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'en-US'; 
-                utterance.rate = 0.9;     
+                utterance.lang = 'en-US'; utterance.rate = 0.9;
                 window.speechSynthesis.speak(utterance);
             }
         }
-
-        // 供列表使用的發音按鈕
         function speakWord(word) { speakText(word); }
-        
-        // 供字卡正面使用的發音按鈕 (需阻止事件冒泡，避免點發音時卡片翻面)
-        function speakWordFC(event) {
-            event.stopPropagation(); 
-            speakText(quizWords[currentCardIndex].word);
-        }
+        function speakWordFC(event) { event.stopPropagation(); speakText(quizWords[currentCardIndex].word); }
 
-        // === 列表模式邏輯 ===
         function renderWords() {
             const list = document.getElementById('word-list');
             list.innerHTML = '';
-            
             words.forEach(item => {
                 const cardClass = item.status === 'dark' ? 'status-dark' : 'status-light';
                 const card = document.createElement('div');
                 card.className = `word-card ${cardClass}`;
-                
-                const posHtml = item.pos ? `<span class="pos-badge">${item.pos}</span>` : '';
-                const collHtml = item.collocation ? `<div><strong>🔗 搭配詞：</strong><br>${item.collocation}</div>` : '<div><strong>🔗 搭配詞：</strong><br>-</div>';
-                const synAntHtml = item.synAnt ? `<div><strong>🔄 同/反義：</strong><br>${item.synAnt}</div>` : '<div><strong>🔄 同/反義：</strong><br>-</div>';
-
                 card.innerHTML = `
                     <div class="card-header">
                         <h3 class="word-title">${item.word}</h3>
                         <span class="word-translation">(${item.translation})</span>
-                        ${posHtml}
-                        <button class="speaker-btn" title="播放發音" onclick="speakWord('${item.word}')">🔊</button>
+                        ${item.pos ? `<span class="pos-badge">${item.pos}</span>` : ''}
+                        <button class="speaker-btn" onclick="speakWord('${item.word}')">🔊</button>
                         <button class="edit-btn" onclick="editWord(${item.id})">編輯</button>
                     </div>
                     <div class="grid-info">
-                        ${collHtml}
-                        ${synAntHtml}
+                        <div><strong>🔗 搭配詞：</strong><br>${item.collocation || '-'}</div>
+                        <div><strong>🔄 同/反義：</strong><br>${item.synAnt || '-'}</div>
                     </div>
                     <div class="word-content"><strong>📝 例句：</strong><br>${item.example}</div>
                     <div class="word-content"><strong>🎯 出題重點：</strong><br>${item.focus}</div>
@@ -367,31 +218,35 @@
 
         function saveWord() {
             const idInput = document.getElementById('edit-id').value;
-            const word = document.getElementById('word').value.trim();
-            const translation = document.getElementById('translation').value.trim();
-            const pos = document.getElementById('pos').value.trim();
-            const collocation = document.getElementById('collocation').value.trim();
-            const synAnt = document.getElementById('synAnt').value.trim();
-            const example = document.getElementById('example').value.trim();
-            const focus = document.getElementById('focus').value.trim();
-            const status = document.getElementById('status').value;
+            const newWord = {
+                word: document.getElementById('word').value.trim(),
+                translation: document.getElementById('translation').value.trim(),
+                pos: document.getElementById('pos').value.trim(),
+                collocation: document.getElementById('collocation').value.trim(),
+                synAnt: document.getElementById('synAnt').value.trim(),
+                example: document.getElementById('example').value.trim(),
+                focus: document.getElementById('focus').value.trim(),
+                status: document.getElementById('status').value
+            };
 
-            if (!word || !translation || !example || !focus) {
-                alert('請至少填寫單字、中文意思、例句與出題重點！');
-                return;
+            if (!newWord.word || !newWord.translation || !newWord.example || !newWord.focus) {
+                alert('請填寫必填欄位！'); return;
             }
 
             if (idInput) {
                 const index = words.findIndex(w => w.id === parseInt(idInput));
-                words[index] = { id: parseInt(idInput), word, translation, pos, collocation, synAnt, example, focus, status };
+                newWord.id = parseInt(idInput);
+                words[index] = newWord;
                 document.getElementById('form-title').innerText = '新增單字';
                 document.getElementById('save-btn').innerText = '儲存單字';
             } else {
-                const newId = words.length > 0 ? Math.max(...words.map(w => w.id)) + 1 : 1;
-                words.unshift({ id: newId, word, translation, pos, collocation, synAnt, example, focus, status });
+                newWord.id = new Date().getTime();
+                words.unshift(newWord);
             }
 
-            // 清空表單
+            saveToStorage();
+            renderWords();
+
             document.getElementById('edit-id').value = '';
             document.getElementById('word').value = '';
             document.getElementById('translation').value = '';
@@ -401,8 +256,6 @@
             document.getElementById('example').value = '';
             document.getElementById('focus').value = '';
             document.getElementById('status').value = 'light';
-
-            renderWords();
         }
 
         function editWord(id) {
@@ -417,77 +270,53 @@
                 document.getElementById('example').value = item.example;
                 document.getElementById('focus').value = item.focus;
                 document.getElementById('status').value = item.status;
-                
                 document.getElementById('form-title').innerText = '編輯單字';
                 document.getElementById('save-btn').innerText = '更新單字';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
-        // === 翻轉字卡小考邏輯 ===
         let quizWords = [];
         let currentCardIndex = 0;
         const cardElement = document.getElementById('flashcard-element');
 
         function initFlashcards() {
             if (words.length === 0) {
-                alert("目前沒有單字喔！請先切換到「列表管理」新增單字。");
-                switchMode('list');
+                document.getElementById('fc-word').innerText = "尚無單字";
+                document.getElementById('fc-trans').innerText = "請先新增單字";
                 return;
             }
-            // 複製一份陣列用來測驗
             quizWords = [...words];
             currentCardIndex = 0;
-            // 確保卡片翻回正面
             cardElement.classList.remove('is-flipped');
             updateFlashcardUI();
         }
 
         function updateFlashcardUI() {
             const currentWord = quizWords[currentCardIndex];
-            
-            // 更新進度條
             document.getElementById('fc-progress').innerText = `字卡進度: ${currentCardIndex + 1} / ${quizWords.length}`;
-            
-            // 更新正面
             document.getElementById('fc-word').innerText = currentWord.word;
-            
-            // 更新背面
             document.getElementById('fc-trans').innerText = currentWord.translation;
             document.getElementById('fc-pos').innerText = currentWord.pos ? `[ ${currentWord.pos} ]` : '';
             document.getElementById('fc-example').innerText = currentWord.example;
         }
 
-        function flipCard() {
-            cardElement.classList.toggle('is-flipped');
-        }
-
+        function flipCard() { cardElement.classList.toggle('is-flipped'); }
         function nextCard() {
             if (currentCardIndex < quizWords.length - 1) {
-                cardElement.classList.remove('is-flipped'); // 先翻回正面
-                setTimeout(() => {
-                    currentCardIndex++;
-                    updateFlashcardUI();
-                }, 200); // 等待一點翻回正面的動畫時間再換字
-            } else {
-                alert("已經是最後一個單字囉！你可以點擊「隨機打亂」重新測驗。");
+                cardElement.classList.remove('is-flipped');
+                setTimeout(() => { currentCardIndex++; updateFlashcardUI(); }, 200);
             }
         }
-
         function prevCard() {
             if (currentCardIndex > 0) {
                 cardElement.classList.remove('is-flipped');
-                setTimeout(() => {
-                    currentCardIndex--;
-                    updateFlashcardUI();
-                }, 200);
+                setTimeout(() => { currentCardIndex--; updateFlashcardUI(); }, 200);
             }
         }
-
         function shuffleCards() {
             cardElement.classList.remove('is-flipped');
             setTimeout(() => {
-                // Fisher-Yates 隨機洗牌演算法
                 for (let i = quizWords.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [quizWords[i], quizWords[j]] = [quizWords[j], quizWords[i]];
@@ -497,7 +326,6 @@
             }, 200);
         }
 
-        // 初始執行
         renderWords();
     </script>
 </body>
